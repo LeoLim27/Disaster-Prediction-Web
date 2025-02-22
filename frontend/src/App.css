@@ -1,0 +1,18 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.content {
+  text-align: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.form-container {
+  width: 300px;
+}
+
+.map-container {
+  width: 800px;
+}
