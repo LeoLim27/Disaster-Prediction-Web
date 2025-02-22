@@ -1,58 +1,59 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import React, { useEffect, useRef, useState } from "react";
+import * as d3 from "d3";
+import { geoAlbersUsa, geoPath } from "d3-geo";
+import { feature } from "topojson-client";
 
-const USMap = ({ disasterData }) => {
+const USMap = () => {
+  const svgRef = useRef();
   const [geoData, setGeoData] = useState(null);
 
+  // 주별 색상 설정 (예제)
+  const stateColors = {
+    CA: "#ff0000", // 캘리포니아 (빨강)
+    TX: "#00ff00", // 텍사스 (초록)
+    NY: "#0000ff", // 뉴욕 (파랑)
+  };
+
   useEffect(() => {
-    fetch("https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
-      .then((response) => response.json())
-      .then((data) => setGeoData(data))
-      .catch((error) => console.error("Error loading GeoJSON:", error));
+    // 미국 지도 데이터 가져오기
+    d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then((topology) => {
+      const geoJson = feature(topology, topology.objects.states);
+      setGeoData(geoJson);
+    });
   }, []);
 
-  // 색상 매핑 함수 (재난 빈도수에 따라 색상 변경)
-  const getColor = (stateCode) => {
-    const disasterInfo = disasterData.find((d) => d.state_code === stateCode);
-    if (!disasterInfo) return "#cccccc"; // 데이터 없을 경우 회색
+  useEffect(() => {
+    if (!geoData) return;
 
-    const count = disasterInfo.disaster_count; // 해당 주의 재난 발생 횟수
-    return count > 50 ? "#800026"
-         : count > 30 ? "#BD0026"
-         : count > 20 ? "#E31A1C"
-         : count > 10 ? "#FC4E2A"
-         : "#FFEDA0"; // 빈도 낮으면 연한 색
-  };
+    const svg = d3.select(svgRef.current);
+    const width = 800, height = 500;
 
-  // GeoJSON 스타일 적용
-  const style = (feature) => ({
-    fillColor: getColor(feature.properties.postal), // 주 코드 기반 색상 결정
-    weight: 1,
-    opacity: 1,
-    color: "black",
-    fillOpacity: 0.7
-  });
+    // 미국 지도 투영법 설정
+    const projection = geoAlbersUsa().translate([width / 2, height / 2]).scale(1000);
+    const pathGenerator = geoPath().projection(projection);
 
-  // 각 주에 팝업 추가
-  const onEachFeature = (feature, layer) => {
-    const stateCode = feature.properties.postal;
-    const disasterInfo = disasterData.find((d) => d.state_code === stateCode);
+    // 지도 렌더링
+    svg.selectAll("path")
+        .data(geoData.features)
+        .join("path")
+        .attr("d", pathGenerator)
+        .attr("fill", d => {
+          const stateCode = d.properties.iso_3166_2?.split("-")[1]; // 주 코드
+          return stateColors[stateCode] || "#cccccc"; // 기본 회색
+        })
+        .attr("stroke", "#333")
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("fill", "#ffd700"); // 호버 효과 (노란색)
+        })
+        .on("mouseout", function (event, d) {
+          const stateCode = d.properties.iso_3166_2?.split("-")[1];
+          d3.select(this).attr("fill", stateColors[stateCode] || "#cccccc");
+        });
 
-    let popupContent = `<b>${feature.properties.name}</b><br/>`;
-    popupContent += disasterInfo ? `재난 발생 횟수: ${disasterInfo.disaster_count}` : "데이터 없음";
-
-    layer.bindPopup(popupContent);
-  };
+  }, [geoData]);
 
   return (
-    <MapContainer center={[37.8, -96]} zoom={4} style={{ height: "600px", width: "100%" }}>
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {geoData && <GeoJSON data={geoData} style={style} onEachFeature={onEachFeature} />}
-    </MapContainer>
+      <svg ref={svgRef} width={800} height={500} style={{ border: "1px solid black" }} />
   );
 };
 

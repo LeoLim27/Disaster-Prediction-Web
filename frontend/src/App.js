@@ -23,10 +23,10 @@ function App() {
         <h1>Disaster Prediction System</h1>
         <UserInputForm onSubmit = {handleFormSubmit} />
       </div>
-      {/* <div>
-        <h4>US Map</h4>
-        <USMap disasterData={disasterData} />
-      </div> */}
+      <div>
+        <h1>US States Risk Map</h1>
+        <USMap></USMap>
+      </div>
     </div>
   );
 }
