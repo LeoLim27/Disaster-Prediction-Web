@@ -2,16 +2,45 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { geoAlbersUsa, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
+import {geoCentroid} from "d3-geo";
 
 const USMap = () => {
   const svgRef = useRef();
   const [geoData, setGeoData] = useState(null);
+  const [selectedDisaster, setSelectedDisaster] = useState("fire");
+  
+  const disasterColors = {
+    fire: {
+      "California": "#ff5733", // 캘리포니아 (화재 - 주황)
+      "Texas": "#ff6f00",
+      "Wisconsin": "#ff4500",
+    },
+    flood: {
+      "California": "#0067a3", // 캘리포니아 (홍수 - 파랑)
+      "Texas": "#0067a3",
+      "Wisconsin": "#0055ff",
+    },
+    earthquake: {
+      "California": "#8b0000", // 캘리포니아 (지진 - 진한 빨강)
+      "Texas": "#a52a2a",
+      "WIsconsin": "#ff5733",
+    },
+  };
 
-  // 주별 색상 설정 (예제)
-  const stateColors = {
-    CA: "#ff0000", // 캘리포니아 (빨강)
-    TX: "#00ff00", // 텍사스 (초록)
-    NY: "#0000ff", // 뉴욕 (파랑)
+  // 리스크 점수 데이터
+  const riskScores = {
+    fire: { California: 60, Texas: 60, Wisconsin: 60 },
+    flood: { California: 60, Texas: 60, Wisconsin: 60 },
+    earthquake: { California: 60, Texas: 65, Wisconsin: 60 },
+  };
+
+  // 점수에 따른 색상 결정 함수
+  const getColorByRisk = (stateCode) => {
+    const score = riskScores[selectedDisaster]?.[stateCode] || 0;
+    if (score >= 50) return "#0067a3"; // 높은 위험 (빨강)
+    if (score >= 30) return "#ff5733"; // 중간 위험 (주황)
+    if (score > 0) return "#ffa07a";  // 낮은 위험 (연한 주황)
+    return "#cccccc"; // 기본 회색
   };
 
   useEffect(() => {
@@ -38,22 +67,67 @@ const USMap = () => {
         .join("path")
         .attr("d", pathGenerator)
         .attr("fill", d => {
-          const stateCode = d.properties.iso_3166_2?.split("-")[1]; // 주 코드
-          return stateColors[stateCode] || "#cccccc"; // 기본 회색
+          const stateCode = d.properties?.name;
+          console.log("stateCode:", stateCode);
+          const stateCodeSplit = stateCode ? stateCode.split("-")[1] : "";
+          console.log("stateCode:", stateCodeSplit);
+          return getColorByRisk(stateCode); // 기본 회색
         })
         .attr("stroke", "#333")
-        .on("mouseover", function (event, d) {
-          d3.select(this).attr("fill", "#ffd700"); // 호버 효과 (노란색)
-        })
-        .on("mouseout", function (event, d) {
-          const stateCode = d.properties.iso_3166_2?.split("-")[1];
-          d3.select(this).attr("fill", stateColors[stateCode] || "#cccccc");
-        });
+        // .on("mouseout", function (event, d) {
+        //   const stateCode = d.properties.iso_3166_2?.split("-")[1];
+        //   d3.select(this).attr("fill", getColorByRisk(stateCode));
+        // });
+        
+        svg.selectAll("text").remove();
 
-  }, [geoData]);
+        svg.selectAll("text")
+          .data(geoData.features)
+          .join("text")
+          .attr("x", d => {
+            const centroid = geoCentroid(d);
+            return projection(centroid)?.[0] || 0;
+          })
+          .attr("y", d => {
+            const centroid = geoCentroid(d);
+            return projection(centroid)?.[1] || 0;
+          })
+          .text(d => {
+            const stateCode = d.properties?.iso_3166_2?.split("-")[1] || ""; // 안전한 접근
+            return riskScores[selectedDisaster]?.[stateCode] || "";
+          })
+          .attr("text-anchor", "middle")
+          .attr("font-size", "16px")
+          .attr("fill", "black")
+          .attr("font-weight", "bold");
+  }, [geoData, selectedDisaster]);
 
   return (
+    <div style={{ textAlign: "center" }}>
+      {/* 네비게이션 바 */}
+      <div style={{ marginBottom: "10px" }}>
+        {["fire", "flood", "earthquake"].map((disaster) => (
+          <button
+            key={disaster}
+            // onClick 이 fire, flood, earthquake 등 일때
+            // 맞는 함수 불러와서 색깔입히기 (fire, flood, earthquake일때 색깔 함수 만들어야함)
+            onClick={() => setSelectedDisaster(disaster)}
+            style={{
+              margin: "5px",
+              padding: "10px",
+              cursor: "pointer",
+              backgroundColor: selectedDisaster === disaster ? "#444" : "#888",
+              color: "white",
+              borderRadius: "5px",
+              border: "none",
+            }}
+          >
+            {disaster.charAt(0).toUpperCase() + disaster.slice(1)}
+          </button>
+        ))}
+      </div>
       <svg ref={svgRef} width={800} height={500} style={{ border: "1px solid black" }} />
+    </div>
   );
 };
 
