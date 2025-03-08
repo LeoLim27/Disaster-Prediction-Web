@@ -8,6 +8,16 @@ This project utilizes machine learning techniques to predict incident types base
 - Provides predictions based on user input.
 - Saves and loads trained models for inference.
 
+## Dataset
+The dataset used for this project (`Dataset_Combined.csv`) contains historical climate data and recorded incident types across various states. It includes attributes such as:
+- **State**: The location where the incident occurred.
+- **Month**: The month in which the incident took place.
+- **Max Temperature / Min Temperature**: Recorded temperature extremes.
+- **Precipitation**: Amount of recorded precipitation.
+- **Incident Type**: The type of incident that occurred (e.g., fire, severe storm, flood).
+
+The dataset has been cleaned, with missing values removed, and categorical variables encoded for model training.
+
 ## Installation
 1. Clone the repository:
    ```sh
