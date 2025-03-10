@@ -1,6 +1,6 @@
 # Incident Type Prediction using Deep Learning
 
-This project utilizes machine learning techniques to predict incident types based on climate and location-related data. It includes data preprocessing, model training, and a FastAPI-based prediction service.
+This project utilizes deep learning techniques to predict incident types based on climate and location-related data. It includes data preprocessing, model training, and a FastAPI-based prediction service.
 
 ## Features
 - Preprocesses climate-related data and categorical variables.
