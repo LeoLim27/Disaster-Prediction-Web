@@ -2,28 +2,30 @@ import React, { useState } from "react";
 import "./App.css";
 import UserInputForm from "./components/UserInputForm";
 import USMap from "./components/USMap";
+import axios from "axios";
 
 function App() {
+  const [predictionResult, setPredictionResult] = useState(null);
   const handleFormSubmit = async (data) => {
       console.log("User Input Data: ", data)
-      const jsonData = JSON.stringify(data);
-
+      const requestData = {
+        state_code: data.state_code,
+        month: data.month,
+        max_temp: data.max_temp,
+        min_temp: data.min_temp,
+        precipitation: data.precipitation
+      };
+      
       try {
-          const response = await fetch("http://localhost:8000/api/predict", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: jsonData,
-          });
-
-          if (!response.ok) {
-              throw new Error("Failed to send data");
-          }
-          const result = await response.json();
-          console.log("Response from API:", result);
+        const response = await axios.post("http://localhost:8000/predict", requestData, {
+          headers: {"Content-Type": "application/json"},
+        });
+        console.log("Prediction Response", response.data);
+        const sortedPrediction = Object.entries(response.data.predictions).sort(([,a],[,b]) => b-a).slice(0,3);
+        setPredictionResult(sortedPrediction);
+    
       } catch (error) {
-          console.log("Error sending data:", error);
+        console.log("Error sending data:", error);
       }
 
   };
@@ -41,6 +43,20 @@ function App() {
       <div>
         <h1>Disaster Prediction System</h1>
         <UserInputForm onSubmit = {handleFormSubmit} />
+      </div>
+      <div>
+        <h2>Prediction Result:</h2>
+        {predictionResult !== null ? (
+          <ul class = "list">
+            {predictionResult.map(([disaster, probability], index) => (
+              <li key={index}>
+                <strong>{disaster}</strong>: {(probability * 100).toFixed(2)}%
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No prediction yet.</p>
+        )}
       </div>
       <div>
         <h1>US States Risk Map</h1>

@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from fastapi.middleware.cors import CORSMiddleware
 
 # 전처리 객체와 모델을 파일에서 로드
 model = load_model("model.h5")
@@ -63,8 +64,19 @@ def predict_incident(user_input: dict) -> dict:
     incident_probs = {incident: float(prob) for incident, prob in zip(le_incident.classes_, pred_prob[0])}
     return incident_probs
 
+
+
+
 # FastAPI 설정
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React 앱이 실행되는 주소
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 HTTP 메서드 허용 (POST, GET, PUT, DELETE 등)
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 # Pydantic 모델: 입력 스키마
 class IncidentInput(BaseModel):

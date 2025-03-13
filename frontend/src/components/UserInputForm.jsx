@@ -25,22 +25,22 @@ const UserInputForm = ({ onSubmit }) => {
       <form onSubmit={handleSubmit}>
         <label>
           State Code:
-          <input type="text" name="state_code" value={formData.state_code} onChange={handleChange} required />
+          <input type="text" name="state_code"  value={formData.state_code} onChange={handleChange} required />
         </label>
 
         <label>
           Month:
-          <input type="number" name="month" value={formData.month} onChange={handleChange} required />
+          <input type="number" name="month"  value={formData.month} onChange={handleChange} required />
         </label>
 
         <label>
           Max Temperature:
-          <input type="number" name="max_temp" value={formData.max_temp} onChange={handleChange} required />
+          <input type="number" name="max_temp"  value={formData.max_temp} onChange={handleChange} required />
         </label>
 
         <label>
           Min Temperature:
-          <input type="number" name="min_temp" value={formData.min_temp} onChange={handleChange} required />
+          <input type="number" name="min_temp"  value={formData.min_temp} onChange={handleChange} required />
         </label>
 
         <label>
