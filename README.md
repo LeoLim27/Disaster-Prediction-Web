@@ -26,7 +26,7 @@ The dataset has been cleaned, with missing values removed, and categorical varia
    ```
 2. Install dependencies:
    ```sh
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    ```
 
 ## Usage
