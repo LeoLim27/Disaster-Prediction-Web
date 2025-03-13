@@ -28,7 +28,10 @@ The dataset has been cleaned, with missing values removed, and categorical varia
    ```sh
    pip3 install -r requirements.txt
    ```
-
+   ```sh
+   npm install
+   ```
+   
 ## Usage
 ### Training the Model
 Run the following command to train the model and save preprocessing objects:
@@ -55,12 +58,14 @@ Then, send a POST request with input data:
 The response will contain predicted probabilities for different incident types.
 
 ## Dependencies
+The required dependencies for backend are listed in the `requirements.txt` file. 
 - Python 3.x
 - FastAPI
 - Pandas
 - TensorFlow
 - Scikit-learn
 - Uvicorn
+The dependencies for frontend are managed via `package.json`.
 
 ## Contributing
 Feel free to submit pull requests for improvements. For major changes, please open an issue first.
