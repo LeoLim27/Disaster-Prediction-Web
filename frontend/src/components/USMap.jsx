@@ -11,7 +11,7 @@ const disasterColorThemes = {
   "Coastal Storm" : ["#E0FFFF", "#B0E0E6", "#87CEFA"],
   "Tropical Cyclones" : ["#D8BFD8", "#8A2BE2", "#800080"],
   "Temperature Extremes": ["#FFD700", "#FFA500", "#FF8C00"],
-  "Seismic Activities": ["#FFFFE0", "#FFFF00", "#FFD700"],
+  "Seismic Activities": ["#FFFFE0", "#FFFF00", "#FFD700"]
 };
 
 const stateNameToCode = {

@@ -57,19 +57,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 재난 카테고리 매핑
-category_mapping = {
-    "Severe Storm": {"Severe Storm", "Severe Ice Storm", "Snowstorm", "Tornado", "Winter Storm"},
-    "Coastal Storm": {"Coastal Storm", "Flood", "Tsunami"},
-    "Temperature Extremes": {"Drought", "Freezing"},
-    "Seismic Activity": {"Earthquake", "Volcanic Eruption"},
-    "Tropical Cyclones": {"Hurricane", "Tropical Storm"},
-    "Fire": {"Fire"},
-    "Biological": {"Biological", "Toxic Substances"},
-    "Fishing Losses": {"Fishing Losses"},
-    "Other": {"Other"}
-}
-
 disaster_to_category = {
     disaster: category for category, disasters in category_mapping.items() for disaster in disasters
 }
