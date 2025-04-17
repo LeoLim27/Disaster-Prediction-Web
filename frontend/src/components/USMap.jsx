@@ -4,6 +4,9 @@ import { geoAlbersUsa, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import {geoCentroid} from "d3-geo";
 
+
+
+
 const USMap = () => {
   const svgRef = useRef();
   const [geoData, setGeoData] = useState(null);
