@@ -3,14 +3,14 @@ from collections import defaultdict
 
 # 재난 코드들을 재난 카테고리로 매핑
 category_mapping = {
-    "Severe Storm": {"Severe Storm", "Severe Ice Storm", "Snowstorm", "Tornado", "Winter Storm"},
-    "Coastal Storm": {"Coastal Storm", "Flood", "Tsunami"},
-    "Temperature Extremes": {"Drought", "Freezing"},
-    "Seismic Activity": {"Earthquake", "Volcanic Eruption"},
-    "Tropical Cyclones": {"Hurricane", "Tropical Storm"},
+    "Severe_Storm": {"Severe Storm", "Severe Ice Storm", "Snowstorm", "Tornado", "Winter Storm"},
+    "Coastal_Storm": {"Coastal Storm", "Flood", "Tsunami"},
+    "Temperature_Extremes": {"Drought", "Freezing"},
+    "Seismic_Activity": {"Earthquake", "Volcanic Eruption"},
+    "Tropical_Cyclones": {"Hurricane", "Tropical Storm"},
     "Fire": {"Fire"},
     "Biological": {"Biological", "Toxic Substances"},
-    "Fishing Losses": {"Fishing Losses"},
+    "Fishing_Losses": {"Fishing Losses"},
     "Other": {"Other"}
 }
 
@@ -91,6 +91,16 @@ def parse_disaster_data(csv_path: str):
     return state_disaster_counts
 
 csv_path = "/Users/user/Desktop/disaster-prediction-project/backend/Dataset_Combined.csv"
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/disaster-counts")
 def get_disaster_counts():

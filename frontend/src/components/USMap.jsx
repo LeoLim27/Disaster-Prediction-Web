@@ -1,59 +1,67 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as d3 from "d3";
-import { geoAlbersUsa, geoPath } from "d3-geo";
+import { geoAlbersUsa, geoPath, geoCentroid } from "d3-geo";
 import { feature } from "topojson-client";
-import {geoCentroid} from "d3-geo";
 
 
 
+const disasterColorThemes = {
+  "Fire" : ["#FF9999", "#FF4D4D", "#FF0000"],
+  "Flood" : ["#ADD8E6", "#1E90FF", "#0000FF"],
+  "Biological" : ["#90EE90", "#32CD32", "#006400"],
+  "Severe Storm" : ["#D3D3D3", "#808080", "#696969"],
+  "Coastal Storm" : ["#E0FFFF", "#B0E0E6", "#87CEFA"],
+  "Tropical Cyclones" : ["#D8BFD8", "#8A2BE2", "#800080"],
+  "Temperature Extremes": ["#FFD700", "#FFA500", "#FF8C00"],
+  "Seismic Activities": ["#FFFFE0", "#FFFF00", "#FFD700"],
+};
+
+const stateNameToCode = {
+  "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR",
+  "California": "CA", "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE",
+  "Florida": "FL", "Georgia": "GA", "Hawaii": "HI", "Idaho": "ID",
+  "Illinois": "IL", "Indiana": "IN", "Iowa": "IA", "Kansas": "KS",
+  "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+  "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS",
+  "Missouri": "MO", "Montana": "MT", "Nebraska": "NE", "Nevada": "NV",
+  "New Hampshire": "NH", "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY",
+  "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH", "Oklahoma": "OK",
+  "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC",
+  "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX", "Utah": "UT",
+  "Vermont": "VT", "Virginia": "VA", "Washington": "WA", "West Virginia": "WV",
+  "Wisconsin": "WI", "Wyoming": "WY", "District of Columbia": "DC"
+};
 
 const USMap = () => {
   const svgRef = useRef();
   const [geoData, setGeoData] = useState(null);
+  const [disasterData, setDisasterData] = useState({});
   const [selectedDisaster, setSelectedDisaster] = useState("fire");
-  
-  // const disasterColors = {
-  //   fire: {
-  //     "California": "#ff5733", // 캘리포니아 (화재 - 주황)
-  //     "Texas": "#ff6f00",
-  //     "Wisconsin": "#ff4500",
-  //   },
-  //   flood: {
-  //     "California": "#0067a3", // 캘리포니아 (홍수 - 파랑)
-  //     "Texas": "#0067a3",
-  //     "Wisconsin": "#0055ff",
-  //   },
-  //   earthquake: {
-  //     "California": "#8b0000", // 캘리포니아 (지진 - 진한 빨강)
-  //     "Texas": "#a52a2a",
-  //     "WIsconsin": "#ff5733",
-  //   },
-  // };
 
-  // 리스크 점수 데이터
-  const riskScores = {
-    fire: { California: 60, Texas: 30, Wisconsin: 60 },
-    flood: { California: 60, Texas: 30, Wisconsin: 10 },
-    earthquake: { California: 60, Texas: 35, Wisconsin: 60 },
-  };
 
-  // 점수에 따른 색상 결정 함수
-  const getColorByRisk = (stateCode) => {
-    const score = riskScores[selectedDisaster]?.[stateCode] || 0;
-    if (score >= 50) return "#ec1717"; // 높은 위험 (빨강)
-    if (score >= 30) return "#ff6347"; // 중간 위험 (주황)
-    if (score > 0) return "#fbb9ab";  // 낮은 위험 (연한 주황)
-    return "#f5f5f5"; // 기본 회색
-  };
+  // 색상 결정 함수
+  const getColorByRisk = useCallback(
+    (stateName) => {
+      const stateCode = stateNameToCode[stateName];
+      const stateData = disasterData[stateCode] || {};
+      const count = stateData[selectedDisaster] || 0;
 
-  // Fire 일때 점수에따른 색상결정함수
-  const getColorByRiskFire = (stateCode) => {
-    const score = riskScores[selectedDisaster]?.[stateCode] || 0;
-    if (score >= 50) return "#ec1717"; // 높은 위험 (빨강)
-    if (score >= 30) return "#ff6347"; // 중간 위험 (주황)
-    if (score > 0) return "#fbb9ab";  // 낮은 위험 (연한 주황)
-    return "#f5f5f5"; // 기본 회색
-  };
+      const colorTheme = disasterColorThemes[selectedDisaster] || ["#f5f5f5"];
+
+      if (count >= 70) return colorTheme[2];
+      if (count >= 30) return colorTheme[1];
+      if (count > 0) return colorTheme[0];
+      else return "#f5f5f5"; // 회색
+    },
+    [disasterData, selectedDisaster]
+  );
+
+  useEffect(() => {
+    // 백엔드 API로부터 재난 데이터 로딩
+    d3.json("http://localhost:8001/disaster-counts").then((data) => {
+      setDisasterData(data);
+    });
+  }, []);
 
   useEffect(() => {
     // 미국 지도 데이터 가져오기
@@ -64,7 +72,7 @@ const USMap = () => {
   }, []);
 
   useEffect(() => {
-    if (!geoData) return;
+    if (!geoData || !disasterData) return;
 
     const svg = d3.select(svgRef.current);
     const width = 800, height = 500;
@@ -78,13 +86,17 @@ const USMap = () => {
         .data(geoData.features)
         .join("path")
         .attr("d", pathGenerator)
+        // .attr("fill", d => {
+        //   const stateCode = d.properties?.name;
+        //   console.log("stateCode:", stateCode);
+        //   const stateCodeSplit = stateCode ? stateCode.split("-")[1] : "";
+        //   console.log("stateCode:", stateCodeSplit);
+        //   // get color by risk 함수쓰는중
+        //   return getColorByRisk(stateCode);
+        // })
         .attr("fill", d => {
-          const stateCode = d.properties?.name;
-          console.log("stateCode:", stateCode);
-          const stateCodeSplit = stateCode ? stateCode.split("-")[1] : "";
-          console.log("stateCode:", stateCodeSplit);
-          // get color by risk 함수쓰는중
-          return getColorByRisk(stateCode);
+          const stateName = d.properties.name; // 예: "New Mexico"
+          return getColorByRisk(stateName);
         })
         .attr("stroke", "#333")
         
@@ -101,9 +113,10 @@ const USMap = () => {
             const centroid = geoCentroid(d);
             return projection(centroid)?.[1] || 0;
           })
-          .text(d => {
-            const stateCode = d.properties?.iso_3166_2?.split("-")[1] || "";
-            return riskScores[selectedDisaster]?.[stateCode] || "";
+          .text((d) => {
+            const stateName = d.properties.name;
+            const count = disasterData[stateName]?.[selectedDisaster] || 0;
+            return count > 0 ? count : "";
           })
           .attr("text-anchor", "middle")
           .attr("font-size", "16px")
@@ -113,13 +126,11 @@ const USMap = () => {
 
   return (
     <div style={{ textAlign: "center" }}>
-      {/* 내비게이션 바 */}
+      {/* 네비게이션 버튼 */}
       <div style={{ marginBottom: "10px" }}>
-        {["fire", "flood", "earthquake"].map((disaster) => (
+        {Object.keys(disasterColorThemes).map((disaster) => (
           <button
             key={disaster}
-            // onClick 이 fire, flood, earthquake 등 일때
-            // 맞는 함수 불러와서 색깔입히기 (fire, flood, earthquake일때 색깔 함수 만들어야함)
             onClick={() => setSelectedDisaster(disaster)}
             style={{
               margin: "5px",
@@ -131,7 +142,7 @@ const USMap = () => {
               border: "none",
             }}
           >
-            {disaster.charAt(0).toUpperCase() + disaster.slice(1)}
+            {disaster}
           </button>
         ))}
       </div>
