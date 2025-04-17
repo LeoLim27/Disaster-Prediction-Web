@@ -4,10 +4,8 @@ import { geoAlbersUsa, geoPath, geoCentroid } from "d3-geo";
 import { feature } from "topojson-client";
 
 
-
 const disasterColorThemes = {
   "Fire" : ["#FF9999", "#FF4D4D", "#FF0000"],
-  "Flood" : ["#ADD8E6", "#1E90FF", "#0000FF"],
   "Biological" : ["#90EE90", "#32CD32", "#006400"],
   "Severe Storm" : ["#D3D3D3", "#808080", "#696969"],
   "Coastal Storm" : ["#E0FFFF", "#B0E0E6", "#87CEFA"],

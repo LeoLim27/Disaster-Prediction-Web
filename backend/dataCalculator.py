@@ -1,18 +1,16 @@
 import csv
 from collections import defaultdict
 
-# 재난 코드들을 재난 카테고리로 매핑
 category_mapping = {
-    "Severe_Storm": {"Severe Storm", "Severe Ice Storm", "Snowstorm", "Tornado", "Winter Storm"},
-    "Coastal_Storm": {"Coastal Storm", "Flood", "Tsunami"},
-    "Temperature_Extremes": {"Drought", "Freezing"},
-    "Seismic_Activity": {"Earthquake", "Volcanic Eruption"},
-    "Tropical_Cyclones": {"Hurricane", "Tropical Storm"},
+    "Severe Storm": {"Severe Storm", "Severe Ice Storm", "Snowstorm", "Tornado", "Winter Storm"},
+    "Coastal Storm": {"Coastal Storm", "Flood", "Tsunami"},
+    "Temperature Extremes": {"Drought", "Freezing"},
+    "Seismic Activities": {"Earthquake", "Volcanic Eruption"},
+    "Tropical Cyclones": {"Hurricane", "Tropical Storm"},
     "Fire": {"Fire"},
     "Biological": {"Biological", "Toxic Substances"},
-    "Fishing_Losses": {"Fishing Losses"},
-    "Other": {"Other"}
 }
+
 
 # 재난 이름 -> 범주 이름으로 역매핑
 disaster_to_category = {}
