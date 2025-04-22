@@ -1,78 +1,153 @@
 .App {
   text-align: center;
-  font-family: "Arial", sans-serif;
-  background-color: #f4f4f9;
+  font-family: 'Arial', sans-serif;
+  background: #f8f9fa;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
-}
-
-.list {
-  list-style-type: none;
-  padding: 0;
-}
-
-.content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
-  margin-top: 20px;
-  width: 100%;
 }
 
+/* 헤더 섹션 */
+.header-section {
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 2rem;
+}
+
+/* 입력 폼 */
 .form-container {
-  width: 100%;
-  max-width: 350px;
-  padding: 20px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.form-container input,
-.form-container select,
-.form-container button {
+/* UserInputForm: 레이블 텍스트와 입력칸을 같은 줄에 */
+.form-container form label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-container form label input {
+  margin-left: 0.5rem;
+  flex: 1;
+  display: inline-block;
+}
+
+/* 지도 섹션 */
+.map-section {
   width: 100%;
-  margin-top: 7px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  max-width: 1200px;
+  background: white;
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.form-container button {
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
+/* 재난 버튼 스타일 */
+.map-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.map-button {
+  padding: 8px 16px;
+  border: 2px solid #007bff;
+  border-radius: 20px;
+  background: white;
+  color: #007bff;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
-.form-container button:hover {
-  background-color: #0056b3;
+.map-button.active {
+  background: #007bff;
+  color: white;
 }
 
-.map-container {
+.map-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 뉴스 섹션 */
+.news-section {
   width: 100%;
-  max-width: 900px;
-  height: auto;
+  max-width: 1200px;
   background: white;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.map-container {
-  width: 800px;
+.news-container {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.map-container svg {
+/* 이미지 컨테이너 */
+.image-container {
+  position: relative;
   width: 100%;
-  height: auto;
-  display: block;
+  padding-top: 56.25%; /* 16:9 비율 */
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
 }
+
+.news-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 막대 차트 스타일 */
+.bar-chart-container {
+  position: relative;
+}
+
+.bar-chart-axis text {
+  font-size: 12px;
+}
+
+.bar-chart-axis path,
+.bar-chart-axis line {
+  stroke: #cccccc;
+}
+
+.bar-chart rect {
+  transition: all 0.3s ease;
+}
+
+.bar-chart rect:hover {
+  opacity: 0.8;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1rem;
+  }
+
+  .map-section, .news-section {
+    padding: 1rem;
+  }
+
+  .news-container {
+    grid-template-columns: 1fr;
+  }
+}
+

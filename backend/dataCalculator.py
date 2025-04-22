@@ -21,7 +21,7 @@ for category, disasters in category_mapping.items():
 # 주별 재난 범주 발생 횟수 집계
 state_disaster_counts = defaultdict(lambda: defaultdict(int))
 
-with open('/Users/user/Desktop/disaster-prediction-project/backend/Dataset_Combined.csv', newline='', encoding='utf-8') as csvfile:
+with open('Dataset_Combined.csv', newline='', encoding='utf-8') as csvfile:
     reader = csv.reader(csvfile)
     for row in reader:
         if not row or len(row) < 4:
@@ -75,7 +75,8 @@ def parse_disaster_data(csv_path: str):
                 state_disaster_counts[state_code][category] += 1
     return state_disaster_counts
 
-csv_path = "/Users/user/Desktop/disaster-prediction-project/backend/Dataset_Combined.csv"
+csv_path = "Dataset_Combined.csv"
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
