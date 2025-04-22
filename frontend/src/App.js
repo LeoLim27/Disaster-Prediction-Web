@@ -3,6 +3,7 @@ import "./App.css";
 import UserInputForm from "./components/UserInputForm";
 import USMap from "./components/USMap";
 import NewsArticles from "./components/NewsArticles";
+import PredictionChart from "./components/PredictionChart";
 import axios from "axios";
 
 function App() {
@@ -16,12 +17,13 @@ function App() {
         month: data.month,
         max_temp: data.max_temp,
         min_temp: data.min_temp,
-        precipitation: data.precipitation
+        precipitation: data.precipitation,
       });
-      
+
       const sortedPrediction = Object.entries(response.data.predictions)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 3);
+
       setPredictionResult(sortedPrediction);
     } catch (error) {
       console.error("Prediction error:", error);
@@ -30,22 +32,34 @@ function App() {
 
   return (
     <div className="App">
-      <div className="header-section">
-        <h1>Disaster Prediction System</h1>
-        <UserInputForm onSubmit={handleFormSubmit} />
-      </div>
-
-      <div className="results-section">
-        <h2>Prediction Result:</h2>
-        {predictionResult ? (
-          <ul className="prediction-list">
-            {predictionResult.map(([disaster, probability], index) => (
-              <li key={index}>
-                <strong>{disaster}</strong>: {(probability * 100).toFixed(2)}%
-              </li>
-            ))}
-          </ul>
-        ) : <p>No prediction yet.</p>}
+      <div className="top-section">
+        <div className="form-section">
+          <h1>Disaster Prediction System</h1>
+          <UserInputForm onSubmit={handleFormSubmit} />
+        </div>
+        <div className="results-section">
+          <h2>Prediction Result:</h2>
+          {predictionResult ? (
+            <>
+              <ul className="prediction-list">
+                {predictionResult.map(([disaster, probability], index) => (
+                  <li key={index}>
+                    <strong>{disaster}</strong>: {(probability * 100).toFixed(2)}%
+                  </li>
+                ))}
+              </ul>
+              <PredictionChart
+                height={350}
+                data={predictionResult.map(([disaster, probability]) => ({
+                  name: disaster,
+                  value: probability * 100,
+                }))}
+              />
+            </>
+          ) : (
+            <p>No prediction yet.</p>
+          )}
+        </div>
       </div>
 
       <div className="map-section">

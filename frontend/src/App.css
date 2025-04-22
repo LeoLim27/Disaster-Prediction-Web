@@ -136,18 +136,74 @@
   opacity: 0.8;
 }
 
+/* 상단 폼 + 결과 가로 배치 */
+.top-section {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
+}
+
+/* 폼 영역 스타일 */
+.top-section .form-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+/* 결과 영역 스타일 */
+.top-section .results-section {
+  flex: 1;
+  max-width: 500px;
+}
+
+/* PredictionChart 높이 조정 */
+.top-section .results-section .recharts-wrapper {
+  height: 350px !important;
+}
+
+/* 기존 결과 섹션 (리스트 + 차트 스택용) */
+.results-section {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.prediction-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.prediction-list li {
+  margin: 0.25rem 0;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .form-container {
     padding: 1rem;
   }
 
-  .map-section, .news-section {
+  .map-section,
+  .news-section {
     padding: 1rem;
   }
 
   .news-container {
     grid-template-columns: 1fr;
+  }
+
+  /* 모바일에서 폼과 결과 세로 배치 */
+  .top-section {
+    flex-direction: column;
+    margin: 1rem auto;
+  }
+
+  .top-section .form-section,
+  .top-section .results-section {
+    max-width: 100%;
   }
 }
 
