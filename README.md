@@ -1,3 +1,15 @@
+# Disaster Data Analysis Platform
+
+This project is a public copy of a private repository.
+
+Originally created and maintained in https://github.com/Disaster-Data-Analysis, this version was cloned with permission for portfolio and demonstration purposes only.
+
+## Credits
+- Original repository: Private Organization (not publicly accessible)
+- My role: backend API development, Front-end development, and integration of Back-end and Front-end
+- Team collaboration via GitHub, using Fast API, React, and Tensorflow
+
+
 # Incident Type Prediction using Deep Learning
 
 This project utilizes deep learning techniques to predict incident types based on climate and location-related data. It includes data preprocessing, model training, and a FastAPI-based prediction service.
